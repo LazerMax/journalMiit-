@@ -183,7 +183,6 @@ $modal_window_report_1 = function (options) {
     }
 
     let strKol = 0;
-    let masObj = [];
 
     function addString(){
         ++strKol;
@@ -209,26 +208,27 @@ $modal_window_report_1 = function (options) {
     }
 
     function saveTable (){
-        let allId = Array.from(document.querySelectorAll('.summary-id'), node => node.textContent),
+        let
+          masObj = [],
+          allId = Array.from(document.querySelectorAll('.summary-id'), node => node.textContent),
           allName = Array.from(document.querySelectorAll('.summary-name'), node => node.textContent),
           allTruancyWeek1 = Array.from(document.querySelectorAll('.summary-truancy-week_1'), node => node.textContent),
           allGoodReasonWeek1 = Array.from(document.querySelectorAll('.good-reason-week_1'), node => node.textContent),
           allTruancyWeek2 = Array.from(document.querySelectorAll('.summary-truancy-week_2'), node => node.textContent),
           allGoodReasonWeek2 = Array.from(document.querySelectorAll('.good-reason-week_2'), node => node.textContent);
 
-        let myObj = {};
 
         for (let i = 0; i < strKol; ++i) {
+            let myObj = {};
             myObj.id = allId[i];
             myObj.name = allName[i];
             myObj.truancyWeek1 = allTruancyWeek1[i];
             myObj.goodReasonWeek1 = allGoodReasonWeek1[i];
             myObj.truancyWeek2 = allTruancyWeek2[i];
             myObj.goodReasonWeek2 = allGoodReasonWeek2[i];
-            console.log(myObj);
             masObj.push(myObj);
-            console.log(masObj);
         }
+        sendJSON(masObj);
     };
 
 
@@ -548,10 +548,10 @@ var Cal = function(divId) {
         'Пн',
         'Вт',
         'Ср',
-        'Чтв',
-        'Птн',
-        'Суб',
-        'Вск'
+        'Чт',
+        'Пт',
+        'Сб',
+        'Вс'
     ];
     // Месяцы начиная с января
     this.Months =['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
@@ -756,9 +756,30 @@ $('.right').on('click', function() {
 
 });
 
-//document.getElementsByClassName("btn-save").addEventListener("click", () => {
+function sendJSON(masObj) {
 
-//})
+    let result = document.querySelector('.result');
+
+    let xhr = new XMLHttpRequest();
+    // адрес, куда мы отправим нашу JSON-строку
+    let url = "backend/summary.php";
+    // открываем соединение
+    xhr.open("POST", url, true);
+    // устанавливаем заголовок — выбираем тип контента, который отправится на сервер, в нашем случае мы явно пишем, что это JSON
+    xhr.setRequestHeader("Content-Type", "application/json");
+    // когда придёт ответ на наше обращение к серверу, мы его обработаем здесь
+    xhr.onreadystatechange = function () {
+        // если запрос принят и сервер ответил, что всё в порядке
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            // выводим то, что ответил нам сервер — так мы убедимся, что данные он получил правильно
+            result.innerHTML = this.responseText;
+        }
+    };
+    // преобразуем наши данные JSON в строку
+    let data = JSON.stringify(masObj);
+    // когда всё готово, отправляем JSON на сервер
+    xhr.send(data);
+}
 
 
 
