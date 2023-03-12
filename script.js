@@ -184,6 +184,34 @@ $modal_window_report_1 = function (options) {
 
     let strKol = 0;
 
+    function addStringFromLocalStorage(){
+        if (localStorage.getItem("summaryData")) {
+            let myObj = JSON.parse(localStorage.getItem("summaryData"));
+            for (key in myObj) {
+                ++strKol;
+                let template = `<tr><td class="block-table summary-id">${myObj[key].id}</td>
+                <td class="block-table summary-name" contenteditable="true">${myObj[key].name}</td>
+               <td class="block-table" contenteditable="true">
+               <table class="includes-table">
+               <tr>
+               <td class="left-block summary-truancy-week_1">${myObj[key].truancyWeek1}</td>
+               <td class="right-block good-reason-week_1">${myObj[key].goodReasonWeek1}</td>
+               </tr>
+               </table></td>
+               <td class="block-table" contenteditable="true">
+               <table class="includes-table">
+               <tr>
+               <td class="left-block summary-truancy-week_2">${myObj[key].truancyWeek2}</td>
+               <td class="right-block good-reason-week_2">${myObj[key].goodReasonWeek2}</td>
+               </tr>
+               </table></td>
+               <td class="block-table" contenteditable="true">
+              </table></td>`;
+                document.getElementById("foo-summary").insertAdjacentHTML("beforeend", template);
+            }
+        }
+        localStorage.clear();
+    }
     function addString(){
         ++strKol;
         let template = `<tr><td class="block-table summary-id">${strKol}</td>
@@ -238,6 +266,7 @@ $modal_window_report_1 = function (options) {
             document.dispatchEvent(_eventShowModal);
 
         };
+        addStringFromLocalStorage();
         document.querySelector(".btn-add").addEventListener("click", addString, false);
         document.querySelector(".btn-save").addEventListener("click", saveTable, false);
     }
@@ -758,28 +787,27 @@ $('.right').on('click', function() {
 
 function sendJSON(masObj) {
 
-    let result = document.querySelector('.result');
+  //  let result = document.querySelector('.result');
 
-    let xhr = new XMLHttpRequest();
+   // let xhr = new XMLHttpRequest();
     // адрес, куда мы отправим нашу JSON-строку
-    let url = "backend/summary.php";
+   // let url = "backend/summary.php";
     // открываем соединение
-    xhr.open("POST", url, true);
+    //xhr.open("POST", url, true);
     // устанавливаем заголовок — выбираем тип контента, который отправится на сервер, в нашем случае мы явно пишем, что это JSON
-    xhr.setRequestHeader("Content-Type", "application/json");
+    //xhr.setRequestHeader("Content-Type", "application/json");
     // когда придёт ответ на наше обращение к серверу, мы его обработаем здесь
-    xhr.onreadystatechange = function () {
+  //  xhr.onreadystatechange = function () {
         // если запрос принят и сервер ответил, что всё в порядке
-        if (xhr.readyState === 4 && xhr.status === 200) {
+      //  if (xhr.readyState === 4 && xhr.status === 200) {
             // выводим то, что ответил нам сервер — так мы убедимся, что данные он получил правильно
-            result.innerHTML = this.responseText;
-        }
-    };
+         //   result.innerHTML = this.responseText;
+      //  }
+   // };
     // преобразуем наши данные JSON в строку
     let data = JSON.stringify(masObj);
+    localStorage.setItem("summaryData", data);
     // когда всё готово, отправляем JSON на сервер
-    xhr.send(data);
+    //xhr.send(data);
 }
-
-
 
